@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.30)
 
 project(BlackMagicDecklinkAPIExample LANGUAGES CXX)
 
+set(CMAKE_BUILD_TYPE Debug)
+
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         set(BUILD_FOR_WIN TRUE)
         message("Windows platform detected..")

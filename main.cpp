@@ -1,37 +1,46 @@
 #include "DeckLinkAPI.h"
 #include "DeckLinkAPIDispatch_v10_8.cpp"
+
 #include <iostream>
+#include <memory>
 
 int main(int argc, char *argv[])
 {
-    IDeckLinkIterator *deckLinkIterator = CreateDeckLinkIteratorInstance();
-    if (deckLinkIterator == nullptr)
+    std::unique_ptr<IDeckLinkIterator> pDeckLinkIterator(CreateDeckLinkIteratorInstance());
+
+    if (pDeckLinkIterator == nullptr)
     {
         std::cerr << "Could not create DeckLink iterator. Are you sure a Decklink device is connected?" << std::endl;
         return 1;
     }
 
-    IDeckLink *deckLink;
-    while (deckLinkIterator->Next(&deckLink) == S_OK)
+    std::shared_ptr<IDeckLink> pDeckLink;
+    IDeckLink* pRawDecklinkPtr = pDeckLink.get();
+
+    while (pDeckLinkIterator->Next(&pRawDecklinkPtr) == S_OK)
     {
-        // Do something with deckLink
-        const char *deviceName;
-        if (deckLink->GetDisplayName(&deviceName) == S_OK)
+        std::string deviceName;
+        const char* cstrDeviceName = deviceName.c_str();
+
+        if (pDeckLink->GetDisplayName(&cstrDeviceName) == S_OK)
         {
             // Device is found
             std::cout << deviceName << std::endl;
         }
-        IDeckLinkAPIInformation *apiInfo = CreateDeckLinkAPIInformationInstance();
-        if (apiInfo == nullptr)
+
+        IDeckLinkAPIInformation* pApiInfo = CreateDeckLinkAPIInformationInstance();
+
+        if (pApiInfo == nullptr)
         {
             std::cerr << "Could not create DeckLink API information instance." << std::endl;
             return 1;
         }
         else
         {
-            // Do something with apiInfo
-            const char *apiVersion;
-            if (apiInfo->GetString(BMDDeckLinkAPIVersion, &apiVersion) == S_OK)
+            std::string apiVersion;
+            const char* cstrApiVersion = apiVersion.c_str();
+
+            if (pApiInfo->GetString(BMDDeckLinkAPIVersion, &cstrApiVersion) == S_OK)
             {
                 std::cout << "API version: " << apiVersion << std::endl;
             }
@@ -39,12 +48,13 @@ int main(int argc, char *argv[])
             {
                 std::cerr << "Could not get API version." << std::endl;
             }
-            apiInfo->Release();
+            pApiInfo->Release();
         }
 
-        IDeckLinkStatus *deckLinkStatus;
-        deckLink->QueryInterface(IID_IDeckLinkStatus, (void **)&deckLinkStatus);
-        if (deckLinkStatus == nullptr)
+        IDeckLinkStatus* pDeckLinkStatus;
+        pDeckLink->QueryInterface(IID_IDeckLinkStatus, reinterpret_cast<void **>(&pDeckLinkStatus));
+
+        if (pDeckLinkStatus == nullptr)
         {
             std::cerr << "Could not create DeckLink status instance." << std::endl;
             return 1;
@@ -52,7 +62,8 @@ int main(int argc, char *argv[])
         else
         {
             int64_t deviceTemp = -1;
-            if (deckLinkStatus->GetInt(bmdDeckLinkStatusDeviceTemperature, &deviceTemp) == S_OK)
+            
+            if (pDeckLinkStatus->GetInt(bmdDeckLinkStatusDeviceTemperature, &deviceTemp) == S_OK)
             {
                 std::cout << "Device Temperature: " << deviceTemp << " °C" << std::endl;
             }
@@ -64,7 +75,7 @@ int main(int argc, char *argv[])
             int64_t pcieLinkWidth = -1;
             int64_t pcieLinkSpeed = -1;
 
-            if ((deckLinkStatus->GetInt(bmdDeckLinkStatusPCIExpressLinkWidth, &pcieLinkWidth) == S_OK) && (deckLinkStatus->GetInt(bmdDeckLinkStatusPCIExpressLinkSpeed, &pcieLinkSpeed) == S_OK))
+            if ((pDeckLinkStatus->GetInt(bmdDeckLinkStatusPCIExpressLinkWidth, &pcieLinkWidth) == S_OK) && (pDeckLinkStatus->GetInt(bmdDeckLinkStatusPCIExpressLinkSpeed, &pcieLinkSpeed) == S_OK))
             {
                 std::cout << "PCIe info: " << pcieLinkSpeed << " Gb/s" << " (" << pcieLinkWidth << " lanes)" << std::endl;
             }
@@ -73,7 +84,7 @@ int main(int argc, char *argv[])
             int64_t videoPixelFormat = -1;
             int64_t videoColorSpace = -1;
 
-            if ((deckLinkStatus->GetInt(bmdDeckLinkStatusCurrentVideoInputMode, &videoDisplayMode) == S_OK) && (deckLinkStatus->GetInt(bmdDeckLinkStatusCurrentVideoOutputMode, &videoPixelFormat) == S_OK) && (deckLinkStatus->GetInt(bmdDeckLinkStatusDetectedVideoInputColorspace, &videoColorSpace) == S_OK))
+            if ((pDeckLinkStatus->GetInt(bmdDeckLinkStatusCurrentVideoInputMode, &videoDisplayMode) == S_OK) && (pDeckLinkStatus->GetInt(bmdDeckLinkStatusCurrentVideoOutputMode, &videoPixelFormat) == S_OK) && (pDeckLinkStatus->GetInt(bmdDeckLinkStatusDetectedVideoInputColorspace, &videoColorSpace) == S_OK))
             {
                 std::cout << "Video display mode:" << videoDisplayMode << " (" << videoPixelFormat << ")" << std::endl;
             }
@@ -82,31 +93,36 @@ int main(int argc, char *argv[])
                 std::cerr << "Could not get video display mode. Are you sure a video input is connected?" << std::endl;
             }
 
-            deckLinkStatus->Release();
+            pDeckLinkStatus->Release();
         }
 
-        IDeckLinkProfileAttributes *profileAttributes;
-        deckLink->QueryInterface(IID_IDeckLinkProfileAttributes, (void **)&profileAttributes);
-        if (profileAttributes == nullptr)
+        IDeckLinkProfileAttributes* pProfileAttributes;
+        pDeckLink->QueryInterface(IID_IDeckLinkProfileAttributes, reinterpret_cast<void **>(&pProfileAttributes));
+
+        if (pProfileAttributes == nullptr)
         {
             std::cerr << "Could not create DeckLink profile attributes instance." << std::endl;
             return 1;
         }
         else
         {
-            // Do something with profileAttributes
             int64_t persistentID = -1;
-            if (profileAttributes->GetInt(BMDDeckLinkPersistentID, &persistentID) == S_OK)
+
+            if (pProfileAttributes->GetInt(BMDDeckLinkPersistentID, &persistentID) == S_OK)
             {
                 std::cout << "Device ID: " << persistentID << std::endl;
             }
-            profileAttributes->Release();
+            else
+            {
+                std::cerr << "Could not get device ID." << std::endl;
+            }
+
+            pProfileAttributes->Release();
         }
 
-        // BMDDeckLinkPersistentID
-        deckLink->Release();
+        pDeckLink->Release();
     }
 
-    deckLinkIterator->Release();
+    pDeckLinkIterator->Release();
     return 0;
 }
