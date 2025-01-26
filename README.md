@@ -1,1 +1,6 @@
-# Blackmagic_Decklink_API_examples
+# Usage
+
+```bash
+$ cmake . && make
+$ ./decklinkInfo
+```

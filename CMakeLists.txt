@@ -6,4 +6,4 @@ project(BlackMagicDecklinkAPIExample LANGUAGES CXX)
 include_directories(${CMAKE_SOURCE_DIR}/api_includes)
 
 # Add the executable target
-add_executable(bmTest main.cpp)
+add_executable(decklinkInfo main.cpp)
