@@ -10,14 +10,14 @@ int main(int argc, char *argv[])
 
     if (pDeckLinkIterator == nullptr)
     {
-        std::cerr << "Could not create DeckLink iterator. Are you sure a Decklink device is connected?" << std::endl;
+        std::cerr << "Could not create DeckLink iterator. Are you sure a DeckLink device is connected?" << std::endl;
         return 1;
     }
 
     std::shared_ptr<IDeckLink> pDeckLink;
-    IDeckLink* pRawDecklinkPtr = pDeckLink.get();
+    IDeckLink* pRawDeckLinkPtr = pDeckLink.get();
 
-    while (pDeckLinkIterator->Next(&pRawDecklinkPtr) == S_OK)
+    while (pDeckLinkIterator->Next(&pRawDeckLinkPtr) == S_OK)
     {
         std::string deviceName;
         const char* cstrDeviceName = deviceName.c_str();
@@ -52,9 +52,8 @@ int main(int argc, char *argv[])
         }
 
         IDeckLinkStatus* pDeckLinkStatus;
-        pDeckLink->QueryInterface(IID_IDeckLinkStatus, reinterpret_cast<void **>(&pDeckLinkStatus));
 
-        if (pDeckLinkStatus == nullptr)
+        if (const HRESULT status = pDeckLink->QueryInterface(IID_IDeckLinkStatus, reinterpret_cast<void **>(&pDeckLinkStatus)); (pDeckLinkStatus == nullptr) || (status != S_OK))
         {
             std::cerr << "Could not create DeckLink status instance." << std::endl;
             return 1;
@@ -97,9 +96,8 @@ int main(int argc, char *argv[])
         }
 
         IDeckLinkProfileAttributes* pProfileAttributes;
-        pDeckLink->QueryInterface(IID_IDeckLinkProfileAttributes, reinterpret_cast<void **>(&pProfileAttributes));
 
-        if (pProfileAttributes == nullptr)
+        if (const HRESULT status = pDeckLink->QueryInterface(IID_IDeckLinkProfileAttributes, reinterpret_cast<void **>(&pProfileAttributes)); (pProfileAttributes == nullptr) || (status != S_OK))
         {
             std::cerr << "Could not create DeckLink profile attributes instance." << std::endl;
             return 1;
