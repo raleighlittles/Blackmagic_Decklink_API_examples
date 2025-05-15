@@ -1,14 +1,22 @@
 cmake_minimum_required(VERSION 3.30)
 
-project(BlackMagicDecklinkAPIExample LANGUAGES CXX)
+project(BlackMagicDeckLinkAPIExample LANGUAGES CXX
+        DESCRIPTION "API examples for interfacing with a BlackMagic DeckLink capture card"
+        HOMEPAGE_URL "https://github.com/raleighlittles/Blackmagic_Decklink_API_examples")
 
 set(CMAKE_BUILD_TYPE Debug)
+set(CMAKE_CXX_STANDARD 23)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(COMPILE_WARNING_AS_ERROR ON)
 
 if (${CMAKE_SYSTEM_NAME} MATCHES "Windows")
         set(BUILD_FOR_WIN TRUE)
         message("Windows platform detected..")
-else()
+elseif (${CMAKE_SYSTEM_NAME} MATCHES "Linux")
         message("Linux platform detected..")
+else()
+        message("Unsupported platform!")
 endif()
 
 option(STATIC_BUILD "Build a static binary." ${BUILD_FOR_WIN})
