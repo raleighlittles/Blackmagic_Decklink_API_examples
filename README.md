@@ -1,3 +1,5 @@
+![CI build badge](https://https://github.com/raleighlittles/Blackmagic_Decklink_API_examples/actions/workflows/main.yml/badge.svg)
+
 # About
 
 This repository contains an example of how to build an application that uses the Blackmagic Decklink SDK.
@@ -8,7 +10,7 @@ The code builds a simple binary that lets you view basic status information abou
 
 It uses CMake to build (the example code provided by Blackmagic uses only Makefiles), and modern C++ features.
 
-Here's what you'll get when you run it:
+Here's an example of what you'll see when you run the tool:
 
 ```
 DeckLink Mini Recorder 4K
@@ -35,3 +37,6 @@ $ ./decklinkInfo
 # Roadmap
 
 - [ ] Add cross-compilation support to be able to build Windows executables on Linux
+
+
+<a href="https://www.buymeacoffee.com/raleighlittles" target="_blank"><img src="https://cdn.buymeacoffee.com/buttons/default-orange.png" alt="Buy Me A Coffee" height="50" width="200"></a>

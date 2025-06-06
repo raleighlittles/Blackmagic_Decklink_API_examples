@@ -1,0 +1,18 @@
+Creator:         Adobe InDesign 20.0 (Macintosh)
+Producer:        Adobe PDF Library 17.0
+CreationDate:    Mon Dec 16 17:49:10 2024 MST
+ModDate:         Mon Dec 16 17:49:28 2024 MST
+Custom Metadata: no
+Metadata Stream: yes
+Tagged:          no
+UserProperties:  no
+Suspects:        no
+Form:            none
+JavaScript:      no
+Pages:           279
+Encrypted:       no
+Page size:       595.276 x 841.89 pts (A4)
+Page rot:        0
+File size:       2975707 bytes
+Optimized:       yes
+PDF version:     1.4
